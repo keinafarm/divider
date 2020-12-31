@@ -42,12 +42,12 @@ class Divider:
             print("元になるシート%sがありません" % sheet_name)
             sys.exit(1)
 
-        column = self.work_book.get_column(source_sheet, column_name, title_lines)
-        if column is None:
+        search_column = self.work_book.get_column(source_sheet, column_name, title_lines)
+        if search_column is None:
             print("元になるカラム%sがありません" % column_name)
             sys.exit(1)
 
-        columns = self.work_book.get_column_data( column, title_lines+1 )
+        columns = self.work_book.get_column_data( search_column, title_lines+1 )
         if columns is None:
             print("データがありませんでした %s" % column_name)
             sys.exit(1)
@@ -55,8 +55,12 @@ class Divider:
         columns = set(columns)
         print(columns)
 
-        self.work_book.make_sheet(columns)
+        self.sheets = self.work_book.make_sheet(columns)
 
+        for keyword in self.sheets.keys():
+            rows = self.work_book.get_rows_by_searched_column(search_column, keyword, title_lines+1)
+            print(keyword)
+            print(rows)
 
 
 if __name__ == "__main__":

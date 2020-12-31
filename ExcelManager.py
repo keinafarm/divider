@@ -127,12 +127,19 @@ class ExcelManager:
         :param sheet_name_list:
         :return:sheet_list
         """
-        sheet_list = []
+        sheet_list = {}
         for sheet_name in sheet_name_list:
             sheet_obj = self.work_book.create_sheet(sheet_name)
-            sheet_list.append(sheet_obj)
+            sheet_list[sheet_name] = sheet_obj
 
-        return  sheet_list
+        return sheet_list
+
+    def get_rows_by_searched_column(self, column_obj, keyword, start_line):
+        cell_list = []
+        for cell in column_obj.parent.iter_rows(min_row=start_line):
+            if cell[column_obj.column-1].value is not None and cell[column_obj.column-1].value == keyword:
+                cell_list.append(cell)
+        return cell_list
 
 if __name__ == "__main__":
     name = make_save_filename("C:\\develop\\python\\pythonProject\\divider\\test.data")
@@ -163,5 +170,8 @@ if __name__ == "__main__":
     print(cells)
 
     print(obj.make_sheet(["test1", "test2", "test3"]))
+
+    cell_line = obj.get_rows_by_searched_column(col, "にこまる", 3)
+    print(cell_line)
 
     obj.close()
