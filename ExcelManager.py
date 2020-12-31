@@ -8,6 +8,7 @@
 import openpyxl
 import sys
 import os
+import shutil
 
 
 def make_save_filename(file_name):
@@ -26,7 +27,9 @@ def make_save_filename(file_name):
         filename_candidacy = os.path.join(dir_name, basename)
         if not os.path.exists(filename_candidacy):
             return filename_candidacy
-    return None
+
+    print("%sからファイル名を作れませんでした" % file_name)
+    sys.exit(1)
 
 
 class ExcelManager:
@@ -35,15 +38,39 @@ class ExcelManager:
         指定されたExcelファイルを管理する
         :param file_name:ファイル名
         """
-        self.file_name = file_name
-        try:
-            self.work_book = openpyxl.load_workbook(file_name, read_only=True)
+        save_file_name = make_save_filename(file_name)
 
-        except:
-            print("ファイル%sがオープン出来ませんでした" % file_name)
+        try:
+            shutil.copy(file_name, save_file_name)
+        except FileNotFoundError as err:
+            print(type(err))
+            print(err)
+            print("ファイル%sがありません" % file_name)
             sys.exit(1)
 
-        save_file_name = make_save_filename(file_name)
+        except OSError as err:
+            print(type(err))
+            print(err)
+            print("%sをファイル%sに複製出来ませんでした" % (file_name, save_file_name))
+            sys.exit(1)
+
+        self.file_name = save_file_name
+        try:
+            self.work_book = openpyxl.load_workbook(self.file_name)
+        except OSError as err:
+            print(type(err))
+            print(err)
+            print("ファイル%sがオープン出来ませんでした" % self.file_name)
+            sys.exit(1)
+
+    def close(self):
+        try:
+            self.work_book.save(self.file_name)
+        except OSError as err:
+            print(type(err))
+            print(err)
+            print("ファイル%sが保存出来ませんでした" % self.file_name)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
@@ -55,3 +82,6 @@ if __name__ == "__main__":
     print(name)
     name = make_save_filename("C:\\develop\\python\\pythonProject\\divider\\test.py")
     print(name)
+
+    obj = ExcelManager("test1.xlsx")
+    obj.close()
