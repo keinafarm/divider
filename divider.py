@@ -22,6 +22,7 @@
 from ExcelManager import ExcelManager
 import sys
 
+
 class Divider:
     def __init__(self, file_name, sheet_name, column_name, title_lines):
         """
@@ -38,24 +39,37 @@ class Divider:
 
         source_sheet = self.work_book.get_sheet(self.sheet_name)
         if source_sheet is None:
-            print("元になるシート%sがありません"%sheet_name)
+            print("元になるシート%sがありません" % sheet_name)
             sys.exit(1)
 
-        columns = self.work_book.get_column(source_sheet, column_name)
-        if columns is None:
-            print("元になるカラム%sがありません"%column_name)
+        column = self.work_book.get_column(source_sheet, column_name, title_lines)
+        if column is None:
+            print("元になるカラム%sがありません" % column_name)
             sys.exit(1)
+
+        columns = self.work_book.get_column_data( column, title_lines+1 )
+        if columns is None:
+            print("データがありませんでした %s" % column_name)
+            sys.exit(1)
+
+        columns = set(columns)
+        print(columns)
+
+        self.work_book.make_sheet(columns)
+
+
 
 if __name__ == "__main__":
-    parameters = len(sys.args)
-    if len < 4 or len > 5:
+    args = sys.argv
+    parameters = len(args)
+    if parameters < 4 or parameters > 5:
         print("Usage:")
         print("   divider  file名 シート名 カラム名 [タイトル行数]")
         sys.exit(1)
 
-    if len == 4:
+    if parameters == 4:
         lines = 2
     else:
-        lines = int(sys.args[4])
+        lines = int(args[4])
 
-    obj = Divider(sys.args[1], sys.args[2], sys.args[3], lines)
+    obj = Divider(args[1], args[2], args[3], lines)

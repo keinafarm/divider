@@ -94,19 +94,45 @@ class ExcelManager:
         else:
             return None
 
-    def get_column(self, sheet, column_name, column_name_line):
+    def get_column(self, sheet_obj, column_name, column_name_line):
         """
         指定した行番号をラベル名の行とし、column_nameで指定された文字列をラベル名とするカラムを返す
-        :param sheet:チェックするシート
+        :param sheet_obj:チェックするシート
         :param column_name:検索するラベル名
         :param column_name_line:検索する行
-        :return:カラムオブジェクト(None=一致するものがない）
+        :return:見つけたカラムのセルオブジェクト(None=一致するものがない）
         """
-        for cell in sheet.iter_cols(min_row=column_name_line, max_row=column_name_line):
+        for cell in sheet_obj.iter_cols(min_row=column_name_line, max_row=column_name_line):
             if cell[0].value is not None and cell[0].value == column_name:
                 return cell[0]
         return None
 
+    def get_column_data(self, column_obj, start_line):
+        """
+
+        :param column_obj:
+        :param start_line:
+        :return:
+        """
+        cell_value_list = []
+        for cell in column_obj.parent.iter_rows(min_row=start_line, min_col=column_obj.column,
+                                                max_col=column_obj.column):
+            if cell[0].value is not None:
+                cell_value_list.append(cell[0].value)
+        return cell_value_list
+
+    def make_sheet(self, sheet_name_list):
+        """
+
+        :param sheet_name_list:
+        :return:sheet_list
+        """
+        sheet_list = []
+        for sheet_name in sheet_name_list:
+            sheet_obj = self.work_book.create_sheet(sheet_name)
+            sheet_list.append(sheet_obj)
+
+        return  sheet_list
 
 if __name__ == "__main__":
     name = make_save_filename("C:\\develop\\python\\pythonProject\\divider\\test.data")
@@ -132,5 +158,10 @@ if __name__ == "__main__":
     col = obj.get_column(sheet, "品種", 2)
     print(col)
     print(obj.get_column(sheet, "テスト", 2))
+
+    cells = obj.get_column_data(col, 3)
+    print(cells)
+
+    print(obj.make_sheet(["test1", "test2", "test3"]))
 
     obj.close()
