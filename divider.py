@@ -56,12 +56,17 @@ class Divider:
         print(columns)
 
         self.sheets = self.work_book.make_sheet(columns)
+        common_rows = self.work_book.get_rows_by_lineNo(source_sheet, 1, title_lines)
+        print(common_rows)
 
         for keyword in self.sheets.keys():
             rows = self.work_book.get_rows_by_searched_column(search_column, keyword, title_lines+1)
-            print(keyword)
+            print(self.sheets[keyword])
             print(rows)
+            self.work_book.append_rows(self.sheets[keyword],common_rows )
+            self.work_book.append_rows(self.sheets[keyword],rows )
 
+        self.work_book.close()
 
 if __name__ == "__main__":
     args = sys.argv

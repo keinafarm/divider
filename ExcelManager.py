@@ -141,6 +141,19 @@ class ExcelManager:
                 cell_list.append(cell)
         return cell_list
 
+    def get_rows_by_lineNo(self, sheet_obj, start_line, end_line):
+        cell_list = []
+        for cell in sheet_obj.iter_rows(min_row=start_line, max_row=end_line):
+            cell_list.append(cell)
+        return cell_list
+
+    def append_rows(self, sheet_obj, rows):
+        for  row in rows:
+            value_list = []
+            for cell in row:
+                value_list.append(cell.value)
+            sheet_obj.append(value_list)
+
 if __name__ == "__main__":
     name = make_save_filename("C:\\develop\\python\\pythonProject\\divider\\test.data")
     print(name)
