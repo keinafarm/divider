@@ -26,47 +26,53 @@ import sys
 class Divider:
     def __init__(self, file_name, sheet_name, column_name, title_lines):
         """
-
-        :param file_name:
-        :param sheet_name:
-        :param column_name:
-        :param title_lines:
+        指定したシートの指定したカラムの内容に従って、シートを作って分配する
+        :param file_name:ファイル名
+        :param sheet_name:抽出元のシート名
+        :param column_name:分配するキーにするカラム名
+        :param title_lines:カラム名が入っている行の番号
         """
-        self.work_book = ExcelManager(file_name)
-        self.sheet_name = sheet_name
-        self.column_name = column_name
-        self.title_lines = title_lines
+        self.work_book = ExcelManager(file_name)  # Excelファイルを管理するオブジェクト
+        self.sheet_name = sheet_name  # 抽出元のシート名
+        self.column_name = column_name  # 分配するキーにするカラム名
+        self.title_lines = title_lines  # カラム名が入っている行の番号
 
-        source_sheet = self.work_book.get_sheet(self.sheet_name)
-        if source_sheet is None:
+        source_sheet = self.work_book.get_sheet(self.sheet_name)  # ファイルを読み込んで管理するオブジェクトを作る
+        if source_sheet is None:  # 失敗したらエラーを出して終了
             print("元になるシート%sがありません" % sheet_name)
             sys.exit(1)
 
+        # 抽出するシートから指定されたカラムを特定する
         search_column = self.work_book.get_column(source_sheet, column_name, title_lines)
-        if search_column is None:
+        if search_column is None:  # 特定出来なかったらエラーを出して終了
             print("元になるカラム%sがありません" % column_name)
             sys.exit(1)
 
-        columns = self.work_book.get_column_data( search_column, title_lines+1 )
-        if columns is None:
+        # 特定出来たカラムからデータを取り出す
+        columns = self.work_book.get_column_data(search_column, title_lines + 1)
+        if columns is None:  # 取り出せなかったらエラーを出して終了
             print("データがありませんでした %s" % column_name)
             sys.exit(1)
 
-        columns = set(columns)
-        print(columns)
+        columns = set(columns)  # 取り出したカラムのデータの重複を取り除く
+        #        print(columns)
 
+        # 取り出したカラムのデータの文字列を名前にしてシートを作成する
         self.sheets = self.work_book.make_sheet(columns)
+        # 抽出元のシートから、コピー先で共通に使用される行を取り出す
         common_rows = self.work_book.get_rows_by_lineNo(source_sheet, 1, title_lines)
-        print(common_rows)
+        #        print(common_rows)
 
+        # 抽出元のシートから行単位でデータを抽出して、作成したシートにコピーする
         for keyword in self.sheets.keys():
-            rows = self.work_book.get_rows_by_searched_column(search_column, keyword, title_lines+1)
-            print(self.sheets[keyword])
-            print(rows)
-            self.work_book.append_rows(self.sheets[keyword],common_rows )
-            self.work_book.append_rows(self.sheets[keyword],rows )
+            rows = self.work_book.get_rows_by_searched_column(search_column, keyword, title_lines + 1)
+            #            print(self.sheets[keyword])
+            #            print(rows)
+            self.work_book.append_rows(self.sheets[keyword], common_rows)
+            self.work_book.append_rows(self.sheets[keyword], rows)
 
         self.work_book.close()
+
 
 if __name__ == "__main__":
     args = sys.argv
