@@ -1,1 +1,1 @@
-pyinstaller divider --onefile
+pyinstaller divider.py --onefile

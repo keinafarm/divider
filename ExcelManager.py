@@ -29,9 +29,9 @@ def make_save_filename(file_name):
             basename = basename + '.' + ext_name
         filename_candidacy = os.path.join(dir_name, basename)  # パス名を再構築
         if not os.path.exists(filename_candidacy):  # 生成したファイル名が存在しなければ、返す
-            return filename_candidacy               # 存在しなければその名前に決定
+            return filename_candidacy  # 存在しなければその名前に決定
 
-    print("%sからファイル名を作れませんでした" % file_name) # 散々探して諦めた
+    print("%sからファイル名を作れませんでした" % file_name)  # 散々探して諦めた
     sys.exit(1)
 
 
@@ -46,13 +46,13 @@ class ExcelManager:
         try:
             shutil.copy(file_name, save_file_name)  # ファイルを複写
         except FileNotFoundError as err:
-            print(type(err))                        # ファイルが見つからなかった
+            print(type(err))  # ファイルが見つからなかった
             print(err)
             print("ファイル%sがありません" % file_name)
             sys.exit(1)
 
         except OSError as err:
-            print(type(err))                        # その他、コピー出来ない事情があった
+            print(type(err))  # その他、コピー出来ない事情があった
             print(err)
             print("%sをファイル%sに複製出来ませんでした" % (file_name, save_file_name))
             sys.exit(1)
@@ -62,7 +62,7 @@ class ExcelManager:
             # Excel Bookを開く
             self.work_book = openpyxl.load_workbook(self.file_name)
         except OSError as err:
-            print(type(err))                        # ファイルを開けなかった
+            print(type(err))  # ファイルを開けなかった
             print(err)
             print("ファイル%sがオープン出来ませんでした" % self.file_name)
             sys.exit(1)
@@ -74,7 +74,7 @@ class ExcelManager:
         try:
             self.work_book.save(self.file_name)
         except OSError as err:
-            print(type(err))                    # 保存に失敗した
+            print(type(err))  # 保存に失敗した
             print(err)
             print("ファイル%sが保存出来ませんでした" % self.file_name)
             sys.exit(1)
@@ -116,8 +116,8 @@ class ExcelManager:
         cell_value_list = []
         for cell in column_obj.parent.iter_rows(min_row=start_line, min_col=column_obj.column,
                                                 max_col=column_obj.column):
-            if cell[0].value is not None:               # 値が入っていなかったら無視
-                cell_value_list.append(cell[0].value)   # 値をリストに追加
+            if cell[0].value is not None:  # 値が入っていなかったら無視
+                cell_value_list.append(cell[0].value)  # 値をリストに追加
         return cell_value_list
 
     def make_sheet(self, sheet_name_list):
@@ -128,8 +128,8 @@ class ExcelManager:
         """
         sheet_list = {}
         for sheet_name in sheet_name_list:
-            sheet_obj = self.work_book.create_sheet(sheet_name) # シートを作る
-            sheet_list[sheet_name] = sheet_obj                  # 辞書に登録
+            sheet_obj = self.work_book.create_sheet(sheet_name)  # シートを作る
+            sheet_list[sheet_name] = sheet_obj  # 辞書に登録
 
         return sheet_list
 
@@ -143,7 +143,7 @@ class ExcelManager:
         """
         cell_list = []
         for cell in column_obj.parent.iter_rows(min_row=start_line):
-            if cell[column_obj.column-1].value is not None and cell[column_obj.column-1].value == keyword:
+            if cell[column_obj.column - 1].value is not None and cell[column_obj.column - 1].value == keyword:
                 cell_list.append(cell)
         return cell_list
 
@@ -167,11 +167,12 @@ class ExcelManager:
         :param rows:追加するデータ（セルリストのリスト
         :return:
         """
-        for  row in rows:
+        for row in rows:
             value_list = []
             for cell in row:
                 value_list.append(cell.value)
             sheet_obj.append(value_list)
+
 
 if __name__ == "__main__":
     name = make_save_filename("C:\\develop\\python\\pythonProject\\divider\\test.data")
